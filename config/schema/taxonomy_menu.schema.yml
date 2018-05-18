@@ -11,6 +11,9 @@ taxonomy_menu.taxonomy_menu.*:
     vocabulary:
       type: string
       label: 'Vocabulary'
+    starting_term:
+      type: integer
+      label: 'Starting Term'
     menu:
       type: string
       label: 'Menu'

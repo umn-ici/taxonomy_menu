@@ -56,6 +56,20 @@ class TaxonomyMenuForm extends EntityForm {
       ),
     ];
 
+    $starting_term = $taxonomy_menu->getStartingTerm();
+    if ($starting_term) {
+      $starting_term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($starting_term);
+    }
+    $form['starting_term'] = [
+      '#type' => 'entity_autocomplete',
+      '#title' => $this->t('Starting term'),
+      '#description' => $this->t('If selected, only terms that are children of this term will be included.'),
+      '#target_type' => 'taxonomy_term',
+      '#default_value' => $starting_term,
+      '#tags' => FALSE,
+      '#maxlength' => 4096,
+    ];
+
     // Description field selection.
     $form['description_container'] = [
       '#type' => 'container',

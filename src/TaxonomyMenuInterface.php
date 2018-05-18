@@ -27,6 +27,14 @@ interface TaxonomyMenuInterface extends ConfigEntityInterface {
   public function getVocabulary();
 
   /**
+   * The parent term to filter on.
+   *
+   * @return int|null
+   *   The id of parent term to filter on
+   */
+  public function getStartingTerm();
+
+  /**
    * Get the depth of terms to generate menu items for.
    *
    * @return int

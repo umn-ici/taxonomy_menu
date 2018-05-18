@@ -61,6 +61,14 @@ class TaxonomyMenu extends ConfigEntityBase implements TaxonomyMenuInterface {
   protected $vocabulary;
 
   /**
+   * The parent term to filter on.
+   *
+   * @var int|null
+   *   The id of parent term to filter on
+   */
+  protected $starting_term;
+
+  /**
    * The depth to generate menu items.
    *
    * @var int
@@ -102,6 +110,13 @@ class TaxonomyMenu extends ConfigEntityBase implements TaxonomyMenuInterface {
    */
   public function getVocabulary() {
     return $this->vocabulary;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getStartingTerm() {
+    return $this->starting_term;
   }
 
   /**
@@ -151,6 +166,7 @@ class TaxonomyMenu extends ConfigEntityBase implements TaxonomyMenuInterface {
     parent::preSave($storage);
     if (!$this->isNew()) {
       foreach (array_keys($this->getLinks([], TRUE)) as $link_key) {
+        // TODO: Fix this, won't work with starting root option
         $this->getMenuLinkManager()->removeDefinition($link_key, FALSE);
       }
     }
@@ -188,7 +204,7 @@ class TaxonomyMenu extends ConfigEntityBase implements TaxonomyMenuInterface {
     /** @var $termStorage \Drupal\taxonomy\TermStorageInterface */
     $termStorage = $this->entityTypeManager()->getStorage('taxonomy_term');
     // Load taxonomy terms for tax menu vocab.
-    $terms = $termStorage->loadTree($this->getVocabulary(), 0, $this->getDepth() + 1);
+    $terms = $termStorage->loadTree($this->getVocabulary(), $this->getStartingTerm() ?: 0, $this->getDepth() + 1);
 
     $links = [];
 
@@ -252,7 +268,7 @@ class TaxonomyMenu extends ConfigEntityBase implements TaxonomyMenuInterface {
     $parents = $termStorage->loadParents($term_id);
     $parents = array_values($parents);
 
-    if (is_array($parents) && count($parents) && !is_null($parents[0]) && $parents[0] != '0') {
+    if (is_array($parents) && count($parents) && !is_null($parents[0]) && $parents[0] != '0' && $parents[0]->id() != $this->getStartingTerm()) {
       $menu_parent_id = $this->buildMenuPluginId($parents[0]);
     }
 
